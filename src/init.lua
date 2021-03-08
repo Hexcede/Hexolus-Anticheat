@@ -444,8 +444,8 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 						do
 							-- Get their humanoid
 							local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-							local flagForUpdate = false
+							
+							local flagForHorizontalUpdate, flagForVerticalUpdate = false
 							if humanoid then
 								local horizontalVelocity = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
 								local verticalSpeed = root.AssemblyLinearVelocity.Y
@@ -462,15 +462,11 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 								local initialVelocity = horizontalVelocity + Vector3.new(0, verticalSpeed, 0)
 								physicsData.Acceleration = initialVelocity - (physicsData.InitialVelocity or Vector3.new())
 
-								-- Make it a pain for exploiters to set WalkSpeed and stuff by blasting them with property updates
+								-- Make it a pain for exploiters to set WalkSpeed and other things by constantly blasting them with property updates
 								-- This makes their speed hacks inconsistent and helps enforce client physics updates by causing big fluctuations in speed
+								-- This is not intended to stop any form of exploiting, just make it more annoying and reduce compatability
 								humanoid.WalkSpeed += SMALL_DECIMAL
 								humanoid.WalkSpeed -= SMALL_DECIMAL
-								-- Causes a lot of issues
-								--humanoid.Health += SMALL_DECIMAL
-								--humanoid.MaxHealth += SMALL_DECIMAL
-								--humanoid.Health -= SMALL_DECIMAL
-								--humanoid.MaxHealth -= SMALL_DECIMAL
 								humanoid.JumpPower += SMALL_DECIMAL
 								humanoid.JumpPower -= SMALL_DECIMAL
 								humanoid.JumpHeight += SMALL_DECIMAL
@@ -490,7 +486,7 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 
 											-- Jump vertical speed
 											verticalSpeed = math.min(verticalSpeed, (math.max(jumpPower, memVertical) + self.Thresholds.VerticalSpeed + self.Thresholds.VerticalSpeedPercent/100 * math.max(jumpPower, memVertical)))
-											flagForUpdate = true
+											flagForVerticalUpdate = true
 										else
 											-- Non-jump vertical speed
 											if humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
@@ -498,7 +494,7 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 													table.insert(reason_DEBUG, "Vert Nojump ("..verticalSpeed.." sps)")
 
 													verticalSpeed = math.min(verticalSpeed, memVertical + self.Thresholds.VerticalSpeedCap)
-													flagForUpdate = true
+													flagForVerticalUpdate = true
 												end
 											end
 
@@ -507,7 +503,7 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 												table.insert(reason_DEBUG, "Vert Accel ("..tostring(physicsData.Acceleration).." sps^2)")
 
 												verticalSpeed = verticalSpeed - physicsData.Acceleration.Y + self.Thresholds.Acceleration
-												flagForUpdate = true
+												flagForVerticalUpdate = true
 											end
 										end
 									end
@@ -519,15 +515,30 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 										table.insert(reason_DEBUG, "Speed ("..horizontalVelocity.Magnitude.." sps)")
 
 										horizontalVelocity = horizontalVelocity.Unit * (walkSpeed + self.Thresholds.Speed + self.Thresholds.SpeedPercent/100 * math.max(walkSpeed, memHorizontal.Magnitude))
-										flagForUpdate = true
+										flagForHorizontalUpdate = true
 									end
 								end
 
 								if updateJumpSpeed then
 									physicsData.JumpSpeed = verticalSpeed
 								end
-
-								initialVelocity = horizontalVelocity + Vector3.new(0, verticalSpeed, 0)
+								
+								local flagForUpdate = flagForVerticalUpdate or flagForHorizontalUpdate
+								
+								-- Update horizontal velocity
+								if flagForHorizontalUpdate then
+									initialVelocity = horizontalVelocity
+								else
+									initialVelocity = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
+								end
+								
+								-- Update vertical velocity
+								if flagForVerticalUpdate then
+									initialVelocity += Vector3.new(0, verticalSpeed, 0)
+								else
+									initialVelocity += Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+								end
+								
 								if physicsData.InitialVelocity then
 									physicsData.Acceleration = initialVelocity - physicsData.InitialVelocity
 								else
@@ -535,6 +546,7 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 								end
 
 								if flagForUpdate then
+									-- Update their velocity
 									root.AssemblyLinearVelocity = initialVelocity
 								end
 							end
