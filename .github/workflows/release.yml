@@ -17,7 +17,7 @@ jobs:
 
       - name: "Build Anticheat"
         run: |
-          "./.github/rojo.exe" build --output Anticheat.rbxm
+          "./.github/rojo.exe" build --output ./Anticheat.rbxm
         shell: cmd
 
       - uses: "marvinpinto/action-automatic-releases@latest"
