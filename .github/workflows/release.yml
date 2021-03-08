@@ -1,0 +1,23 @@
+---
+name: "release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: "Release"
+
+    steps:
+      - name: "Build"
+        run: |
+          rojo build --output Anticheat.rbxm
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            Anticheat.rbxm

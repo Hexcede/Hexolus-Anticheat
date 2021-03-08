@@ -1,0 +1,6 @@
+{
+	"name": "Anticheat",
+	"tree": {
+		"$path": "src"
+	}
+}
