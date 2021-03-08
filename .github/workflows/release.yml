@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: "List files"
-        run: dir .
+        run: tree
 
       - name: "Build Anticheat"
         run: |
