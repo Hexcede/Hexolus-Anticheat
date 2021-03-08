@@ -9,13 +9,13 @@ on:
 jobs:
   release:
     name: "Build release"
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
 
     steps:
       - name: "Build Anticheat"
         run: |
-          "./.github/rojo.exe" build --output Anticheat.rbxm
-        shell: cmd
+          "./.github/rojo" build --output Anticheat.rbxm
+        shell: bash
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
