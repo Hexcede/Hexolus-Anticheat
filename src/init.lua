@@ -1,10 +1,8 @@
 --[[
 	[Hexolus Anticheat]
-	 Author: Hexcede
-	 Updated: 3/1/2020
 	  Built for game version: 1.7.2-TA
 	 Description:
-	   Server-only movement checking & prevention of bad Roblox behaviours
+	   Server-only movement checking & prevention of some bad Roblox behaviours
 	 Extra features:
 	   Listens for server-sided teleportation (.CFrame)
 	   Listens for server-sided movement updates (.Velocity/.LinearAssemblyVelocity)
@@ -12,10 +10,10 @@
 	   Limited BodyMover support
 	    - BodyVelocity
 		- BodyForce
-	   Redo flight detection prevention method (The current ground placement is extremely undesirable)
+	   Redo flight detection prevention method (The current ground placement is extremely undesirable, along with detection)
 	 Todo (Non movement):
 	   Prevent undesirable Humanoid state behaviour
-	   Prevent usage of body parts as nuclear warheads against other players (Make all non-connected character body parts server owned)
+	   Make all non-connected character body parts server owned
 --]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,24 +21,41 @@ local PhysicsService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 
-local StarterCharacterScripts = StarterPlayer:WaitForChild("StarterCharacterScripts")
-local LocalLinker = ReplicatedStorage:FindFirstChild("LocalLinker")
-local Linker = LocalLinker and require(LocalLinker) or
-	-- Code for running outside of Hexolus' environment
-	{TrackConnection = function(connection)return connection end, GetService = function()end}
+-- Set to true to enable debug output, set to RunService:IsStudio() to enable it only in studio
+local DEBUG = false
 
-if not LocalLinker then
-	coroutine.wrap(function()
-		local LocalLinker = ReplicatedStorage:WaitForChild("LocalLinker", 1)
+local Linker
+-- Get the Linker or fallback
+do
+	local LocalLinker = ReplicatedStorage:FindFirstChild("LocalLinker")
 
-		if LocalLinker then
-			warn("[Hexolus Anticheat] Loaded before Linker?")
-		end
-	end)()
+	if not LocalLinker then
+		-- Assign a fallback object for running the anticheat outside of Hexolus' framework
+		Linker = {
+			TrackConnection = function(connection)
+				return connection
+			end,
+			GetService = function()
+	
+			end
+		}
+		
+		-- Spawn a new thread
+		coroutine.wrap(function()
+			-- Attempt to wait for the linker
+			LocalLinker = ReplicatedStorage:WaitForChild("LocalLinker", 1)
+
+			if LocalLinker then
+				Linker = require(LocalLinker)
+				warn("[Hexolus Anticheat] Loaded before Linker?")
+			end
+		end)()
+	else
+		Linker = require(LocalLinker)
+	end
 end
 
 local Anticheat = {}
-local DEBUG
 
 Anticheat.ChecksEnabled = {
 	-- Experimental - You may not wish to turn these on, but, I encourage you to test them out
@@ -586,6 +601,8 @@ function Anticheat:Start()
 	local PlayerManager = Linker:GetService("PlayerManager")
 
 	if Anticheat.ChecksEnabled.Experimental__LocalCharacter then
+		local StarterCharacterScripts = StarterPlayer:WaitForChild("StarterCharacterScripts")
+
 		local LocalCharacterDispatch = script:WaitForChild("LocalCharacterDispatch")
 		LocalCharacterDispatch.Parent = StarterCharacterScripts
 		
@@ -663,7 +680,7 @@ function Anticheat:Stop()
 end
 
 return function()
-	if Linker.Flags then
+	if Linker and Linker.Flags then
 		DEBUG = Linker.Flags.DEBUG
 	end
 
