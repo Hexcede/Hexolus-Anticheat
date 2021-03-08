@@ -89,11 +89,11 @@ Anticheat.ChecksEnabled = {
 Anticheat.Thresholds = {
 	Acceleration = 0.85, -- Maximum vertical acceleration above expected
 	Speed = 0.65, -- Maximum speed above expected
-	SpeedPercent = 3.5, -- Percentage threshold (E.g. 6.5 = 6.5% faster than expected)
-	VerticalSpeed = 0.65, -- Maximum vertical speed above expected
-	VerticalSpeedPercent = 6.5, -- Percentage threshold (E.g. 15 = 15% faster than expected)
+	SpeedPercent = 6.5, -- Percentage threshold (E.g. 6.5 = 6.5% faster than expected)
+	VerticalSpeed = 2, -- Maximum vertical speed above expected
+	VerticalSpeedPercent = 10, -- Percentage threshold (E.g. 15 = 15% faster than expected)
 	VerticalSpeedCap = workspace.Gravity, -- Maximum positive vertical speed
-	Teleportation = 1, -- Maximum teleport distance above expected
+	Teleportation = 1.65, -- Maximum teleport distance above expected
 	TeleportationPercent = 15, -- Percentage leeway (E.g. 25 = 25% further than expected)
 	VerticalTeleportation = 2, -- Maximum teleport distance above expected (vertical)
 	VerticalTeleportationPercent = 35, -- Percentage leeway (E.g. 40 = 40% further than expected)
