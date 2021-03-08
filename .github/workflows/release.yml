@@ -12,10 +12,12 @@ jobs:
     runs-on: "windows-latest"
 
     steps:
+      - name: "List files"
+        run: dir .
+
       - name: "Build Anticheat"
         run: |
-          echo|dir .
-          .rojo/rojo.exe build --output Anticheat.rbxm
+          ./.rojo/rojo.exe build --output Anticheat.rbxm
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
