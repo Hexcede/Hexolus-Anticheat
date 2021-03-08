@@ -545,6 +545,14 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 									physicsData.Acceleration = Vector3.new()
 								end
 
+								-- This improves physics accuracy due to network delay by assuming the acceleration will remain close to the same
+								if flagForUpdate then
+									if physicsData.Acceleration then
+										-- Assume that the client will continue accelerating at the current rate and project that assumption
+										initialVelocity += physicsData.Acceleration
+									end
+								end
+
 								if flagForUpdate then
 									-- Update their velocity
 									root.AssemblyLinearVelocity = initialVelocity
