@@ -20,6 +20,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PhysicsService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
+local Players = game:GetService("Players")
 
 -- Set to true to enable debug output, set to RunService:IsStudio() to enable it only in studio
 local DEBUG = false
@@ -75,6 +76,8 @@ Anticheat.ChecksEnabled = {
 	InvalidDrop = true, -- Dropping tools that don't have CanBeDropped
 	ToolDeletion = true, -- Stop the client from deleting tools (Incompatible with any usage of tool.Parent = nil, use :Destroy() instead)
 	FEGodMode = true, -- God mod achieved by deleting their Humanoid on the server and creating a fake one on the client
+	PreventAccoutrementDrop = true, -- If players can drop and hats(and other accessories). Up to 2017 you could drop hats via the = key however this was removed. If you have a custom hat drop scripts turn this to false.
+	AccoutrementDeletion = true, -- If it prevents the deletion of accoutrements.
 
 	-- Upcoming checks
 	--ServerOwnedLimbs = true, -- Make sure limbs are server owned when detached from the player
@@ -207,6 +210,27 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 					end
 
 					local stillConnected = setmetatable({}, {__mode="kv"})
+					local function ConnectAccoutrementDrop(child)
+						if not stillConnected[child] then
+							local connection
+							connection = child.AncestryChanged:Connect(function(_, parent)
+								-- Yeah, AncestryChanged fires after ChildAdded... Makes sense to me!
+								if child.Parent == character or Players:GetPlayerFromCharacter(child.Parent) then -- Makes stuff like admin commands which exchange hats work.
+									return
+								end
+
+								child:WaitForChild("\0", 1e-6) -- Hacky way to yield for a very very tiny amount of time
+								-- Invalid accoutrement drop or accoutrement got destroyed
+								stillConnected[child] = nil
+								connection:Disconnect()
+								connection = nil
+								if (character and character:IsDescendantOf(game)) and (not child.Parent and Anticheat.ChecksEnabled.AccoutrementDeletion or child.Parent == workspace and Anticheat.ChecksEnabled.PreventAccoutrementDrop) then
+									child.Parent = character
+								end
+							end)
+							stillConnected[child] = connection
+						end
+					end
 					character.ChildAdded:Connect(function(child)
 						if child:IsA("Humanoid") then
 							trackHumanoid()
@@ -265,8 +289,18 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 									end
 								end
 							end
+						elseif child:IsA("Accoutrement") and (Anticheat.ChecksEnabled.PreventAccoutrementDrop or Anticheat.ChecksEnabled.AccoutrementDeletion) then
+							ConnectAccoutrementDrop(child)
 						end
 					end)
+
+					if Anticheat.ChecksEnabled.PreventAccoutrementDrop or Anticheat.ChecksEnabled.AccoutrementDeletion then
+						for _, child in ipairs(character:GetChildren()) do
+							if child:IsA("Accoutrement") then
+								ConnectAccoutrementDrop(child)
+							end
+						end
+					end
 
 					trackHumanoid()
 
