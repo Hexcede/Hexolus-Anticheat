@@ -685,8 +685,6 @@ function Anticheat:Start()
 		local players = {}
 		PlayerManager = {Players = players}
 
-		local Players = game:GetService("Players")
-
 		local function setupPlayer(player)
 			players[player] = {}
 		end
