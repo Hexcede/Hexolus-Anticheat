@@ -5,18 +5,16 @@ on:
   push:
     branches:
       - "main"
-    tags:
-      - "v*"
 
 jobs:
   release:
-    name: "Release"
+    name: "Build release"
     runs-on: "windows-latest"
 
     steps:
-      - name: "Build"
-        run: |
-          rojo build --output Anticheat.rbxm
+      - name: "Build Anticheat"
+        run:
+          shell: ".github/workflows/rojo" build --output Anticheat.rbxm
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
