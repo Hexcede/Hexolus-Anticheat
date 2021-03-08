@@ -13,8 +13,8 @@ jobs:
 
     steps:
       - name: "Build Anticheat"
-        run:
-          shell: ".github/workflows/rojo" build --output Anticheat.rbxm
+        run: |
+          .github/workflows/rojo" build --output Anticheat.rbxm
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
