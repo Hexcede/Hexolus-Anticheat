@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: "Build Anticheat"
         run: |
-          .github/workflows/rojo.exe build --output Anticheat.rbxm
+          ".\.github\workflows\rojo.exe" build --output Anticheat.rbxm
+        working-directory: .
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
