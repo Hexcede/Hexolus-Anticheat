@@ -4,8 +4,8 @@ name: "Automated Release"
 on:
   push:
     tags:
-      - "v*"
-      - "!v*-pre*"
+      - "v*-TA"
+      - "!v*-TA-pre*"
 
 jobs:
   release:

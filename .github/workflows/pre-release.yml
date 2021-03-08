@@ -4,7 +4,7 @@ name: "Automated Pre-Release"
 on:
   push:
     tags:
-      - "v*-pre*"
+      - "v*-TA-pre*"
 
 jobs:
   pre-release:
