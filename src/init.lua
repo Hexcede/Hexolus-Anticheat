@@ -24,10 +24,10 @@ local StarterPlayer = game:GetService("StarterPlayer")
 -- Set to true to enable debug output, set to RunService:IsStudio() to enable it only in studio
 local DEBUG = false
 
-local Linker
+local Linker, LocalLinker
 -- Get the Linker or fallback
 do
-	local LocalLinker = ReplicatedStorage:FindFirstChild("LocalLinker")
+	LocalLinker = ReplicatedStorage:FindFirstChild("LocalLinker")
 
 	if not LocalLinker then
 		-- Assign a fallback object for running the anticheat outside of Hexolus' framework
