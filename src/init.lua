@@ -294,11 +294,11 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 
 			local character = physicsData and player.Character
 			if character then
-				if not physicsData.Sitting then
-					local root = character.PrimaryPart
+				local root = character.PrimaryPart
 
-					-- Make sure they have a root
-					if root then
+				-- Make sure they have a root
+				if root then
+					if not physicsData.Sitting then
 						local updateJumpSpeed = false
 						-- Positional checking
 						do
@@ -574,11 +574,11 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 								end
 							end
 						end
-
-						physicsData.InitTime = os.clock()
-						physicsData.InitialVelocity = root.AssemblyLinearVelocity
-						physicsData.InitialCFrame = root.CFrame
 					end
+
+					physicsData.InitTime = os.clock()
+					physicsData.InitialVelocity = root.AssemblyLinearVelocity
+					physicsData.InitialCFrame = root.CFrame
 				end
 			end
 
