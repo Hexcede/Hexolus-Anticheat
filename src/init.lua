@@ -95,8 +95,8 @@ Anticheat.Thresholds = {
 	VerticalSpeedCap = workspace.Gravity * 0.65, -- Maximum positive vertical speed
 	Teleportation = 5, -- Maximum teleport distance above expected
 	TeleportationPercent = 20, -- Percentage leeway (E.g. 25 = 25% further than expected)
-	VerticalTeleportation = 2, -- Maximum teleport distance above expected (vertical)
-	VerticalTeleportationPercent = 30, -- Percentage leeway (E.g. 40 = 40% further than expected)
+	VerticalTeleportation = 3.25, -- Maximum teleport distance above expected (vertical)
+	VerticalTeleportationPercent = 20, -- Percentage leeway (E.g. 40 = 40% further than expected)
 
 	-- TODO: Rewrite
 	GroundThreshold = 1, -- Distance from the ground to be considered on the ground
