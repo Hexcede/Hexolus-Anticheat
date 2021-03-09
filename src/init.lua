@@ -36,10 +36,10 @@ do
 				return connection
 			end,
 			GetService = function()
-	
+
 			end
 		}
-		
+
 		-- Spawn a new thread
 		coroutine.wrap(function()
 			-- Attempt to wait for the linker
@@ -63,7 +63,7 @@ Anticheat.ChecksEnabled = {
 	-- Must use some custom tool sync code as well
 	-- Some replication quirks exist, so, use this at your own risk
 	-- (e.g. tools are equipped, then dequipped, then equipped again on the client due to how the replication works)
-	
+
 	-- Basic checks
 	Teleportation = true, -- Changing your position, or otherwise moving faster than humanly possible in a single instant
 	Speed = true, -- Zoom
@@ -80,7 +80,7 @@ Anticheat.ChecksEnabled = {
 	--ServerOwnedLimbs = true, -- Make sure limbs are server owned when detached from the player
 	--HumanoidStateValidation = true, -- Validate humanoid states and make sure things such as Swimming, Climbing, etc happen when they make sense to
 
-	
+
 	-- Unstable - DO NOT USE IN PRODUCTION
 	-- TDOO: Rewrite
 	Flight = false
@@ -88,15 +88,15 @@ Anticheat.ChecksEnabled = {
 
 Anticheat.Thresholds = {
 	Acceleration = 0.85, -- Maximum vertical acceleration above expected
-	Speed = 0.65, -- Maximum speed above expected
-	SpeedPercent = 6.5, -- Percentage threshold (E.g. 6.5 = 6.5% faster than expected)
-	VerticalSpeed = 2, -- Maximum vertical speed above expected
-	VerticalSpeedPercent = 10, -- Percentage threshold (E.g. 15 = 15% faster than expected)
-	VerticalSpeedCap = workspace.Gravity, -- Maximum positive vertical speed
-	Teleportation = 1.65, -- Maximum teleport distance above expected
-	TeleportationPercent = 15, -- Percentage leeway (E.g. 25 = 25% further than expected)
+	Speed = 0.35, -- Maximum speed above expected
+	SpeedPercent = 4.5, -- Percentage threshold (E.g. 6.5 = 6.5% faster than expected)
+	VerticalSpeed = 1, -- Maximum vertical speed above expected
+	VerticalSpeedPercent = 5, -- Percentage threshold (E.g. 15 = 15% faster than expected)
+	VerticalSpeedCap = workspace.Gravity * 0.65, -- Maximum positive vertical speed
+	Teleportation = 3, -- Maximum teleport distance above expected
+	TeleportationPercent = 20, -- Percentage leeway (E.g. 25 = 25% further than expected)
 	VerticalTeleportation = 2, -- Maximum teleport distance above expected (vertical)
-	VerticalTeleportationPercent = 35, -- Percentage leeway (E.g. 40 = 40% further than expected)
+	VerticalTeleportationPercent = 30, -- Percentage leeway (E.g. 40 = 40% further than expected)
 
 	-- TODO: Rewrite
 	GroundThreshold = 1, -- Distance from the ground to be considered on the ground
@@ -459,7 +459,7 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 						do
 							-- Get their humanoid
 							local humanoid = character:FindFirstChildOfClass("Humanoid")
-							
+
 							local flagForHorizontalUpdate, flagForVerticalUpdate = false
 							if humanoid then
 								local horizontalVelocity = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
@@ -537,23 +537,23 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 								if updateJumpSpeed then
 									physicsData.JumpSpeed = verticalSpeed
 								end
-								
+
 								local flagForUpdate = flagForVerticalUpdate or flagForHorizontalUpdate
-								
+
 								-- Update horizontal velocity
 								if flagForHorizontalUpdate then
 									initialVelocity = horizontalVelocity
 								else
 									initialVelocity = root.AssemblyLinearVelocity * Vector3.new(1, 0, 1)
 								end
-								
+
 								-- Update vertical velocity
 								if flagForVerticalUpdate then
 									initialVelocity += Vector3.new(0, verticalSpeed, 0)
 								else
 									initialVelocity += Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
 								end
-								
+
 								if physicsData.InitialVelocity then
 									physicsData.Acceleration = initialVelocity - physicsData.InitialVelocity
 								else
@@ -574,6 +574,8 @@ function Anticheat:TestPlayers(PlayerManager, delta)
 								end
 							end
 						end
+					else
+						physicsData.VelocityMemory = root.AssemblyLinearVelocity
 					end
 
 					physicsData.InitTime = os.clock()
@@ -605,10 +607,10 @@ function Anticheat:Start()
 
 		local LocalCharacterDispatch = script:WaitForChild("LocalCharacterDispatch")
 		LocalCharacterDispatch.Parent = StarterCharacterScripts
-		
+
 		local equipEvent = Instance.new("RemoteFunction")
 		equipEvent.Name = "Hexolus_ToolEquipEvent"
-		
+
 		function equipEvent:OnServerInvoke(tool, equip)
 			if typeof(tool) ~= "Instance" then
 				return
@@ -616,17 +618,17 @@ function Anticheat:Start()
 			if not tool:IsA("BackpackItem") then
 				return
 			end
-			
+
 			local character = self.Character
 			if not character then
 				return
 			end
-			
+
 			local humanoid = character:FindFirstChildOfClass("Humanoid")
 			if not humanoid then
 				return
 			end
-			
+
 			local backpack = self:FindFirstChildOfClass("Backpack")
 			if not backpack then
 				return
@@ -642,7 +644,7 @@ function Anticheat:Start()
 				end
 			end
 		end
-		
+
 		equipEvent.Parent = ReplicatedStorage
 	end
 
