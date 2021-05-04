@@ -1,3 +1,24 @@
+# FAQ / READ FIRST
+NOTE: Hexolus is NOT the name of the anticheat, and the Discord server is NOT specific to the anticheat. Hexolus is the name of the game that the anticheat was originally created for. Some of the features from Hexolus are partially open sourced, and, the anticheat is one of them.
+
+Q: How do I download the anticheat?
+A: You can download the anticheat in the Releases tab above, it will be an rbxm file and you can just drop it in
+
+Q: Where do I put the anticheat?
+A: The easiest place to put the anticheat is in `ServerScriptService` 
+
+Q: Why aren't you updating/why haven't you added X yet?
+A: Currently I am rewriting the anticheat from the ground up under the name `Polygon`. Polygon will completely replace this anticheat and become its own separate thing.
+
+Q: Why isn't X getting detected? / "The anticheat isn't working"
+A: A lot of people are understandably a little confused when, for example, setting WalkSpeed doesn't actually get detected by the anticheat. This is because the anticheat adapts to the server, its a lot like FilteringEnabled, but for physics.
+
+# How does it work?
+Most of how the anticheat works is pretty simple actually!
+The anticheat basically just creates a net to block players from moving too far or going to fast. It will predict where it thinks they should be. If they aren't close to where they should be it'll put them back to a place where they are.
+
+The anticheat just uses physics to predict the player's movements, and, adjusts for lag by skipping a bit of time in the physics so their client will receive it. You won't even notice you got lagged back usually.
+
 # Anticheat
 This is the Anticheat for Hexolus.
 
